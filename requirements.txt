@@ -1,0 +1,4 @@
+# DevMeDoAnDrOiD
+pandas>=2.0.0
+openpyxl>=3.1.0
+# Copyright (c) 2026 MeDoAnDrOiD. All Rights Reserved.
