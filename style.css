@@ -81,7 +81,6 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Eye-Catching Floating Aurora Mesh */
 .glow-backdrop {
     position: fixed;
     top: -20vw;
@@ -111,7 +110,6 @@ body {
     z-index: 1;
 }
 
-/* Cyber-Glass Header */
 .main-header {
     display: flex;
     justify-content: space-between;
@@ -246,7 +244,6 @@ body {
     box-shadow: var(--shadow-sm);
 }
 
-/* Hyper-Organized KPI Analytics Dashboard Cards */
 .kpi-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
@@ -310,14 +307,12 @@ body {
 .kpi-title { display: block; font-size: clamp(0.78rem, 1.4vw, 0.88rem); color: var(--text-secondary); font-weight: 600; }
 .kpi-number { display: block; font-size: clamp(1.25rem, 2vw, 1.55rem); font-weight: 900; color: var(--text-primary); }
 
-/* Search Section & Animated Aura Input */
 .search-section { margin-bottom: clamp(18px, 2.5vw, 28px); }
 
 .search-input-container {
     position: relative;
     display: flex;
     align-items: center;
-    margin-bottom: 18px;
 }
 
 .search-icon {
@@ -374,13 +369,53 @@ body {
     transform: scale(1.1);
 }
 
-/* Controls & Interactive Filter Chips */
+/* Quick Search Tags */
+.quick-search-tags {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.quick-search-tags::-webkit-scrollbar { display: none; }
+
+.quick-title {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.quick-tag {
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    color: var(--accent-color);
+    padding: 6px 14px;
+    border-radius: 14px;
+    font-size: 0.82rem;
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.quick-tag:hover {
+    background: var(--accent-color);
+    color: #ffffff;
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+}
+
 .controls-toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     gap: 14px;
+    margin-top: 16px;
     margin-bottom: 18px;
 }
 
@@ -476,7 +511,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* Stats Bar */
 .stats-bar { display: flex; gap: 12px; flex-wrap: wrap; }
 
 .stat-item {
@@ -494,7 +528,6 @@ body {
 .stat-value { font-weight: 800; color: var(--accent-color); }
 .status-indicator { width: 8px; height: 8px; border-radius: 50%; background-color: #10b981; }
 
-/* Eye-Catching Staggered Animation Results Container */
 .results-section {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -525,7 +558,6 @@ body {
 
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* Table View */
 .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .results-table { width: 100%; border-collapse: collapse; text-align: right; min-width: 640px; }
 
@@ -591,7 +623,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* Eye-Catching Card Grid View */
 .cards-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
@@ -623,7 +654,6 @@ body {
 .card-stats-row { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; }
 .card-footer-row { display: flex; justify-content: flex-end; padding-top: 14px; border-top: 1px solid var(--border-color); }
 
-/* Certificate Modal */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -703,8 +733,8 @@ body {
 .progress-track { width: 100%; height: 10px; background: var(--border-color); border-radius: 8px; overflow: hidden; }
 .progress-fill { height: 100%; width: 0%; background: var(--accent-gradient); border-radius: 8px; transition: width 0.6s ease; }
 
-.certificate-footer { display: flex; gap: 14px; }
-.cert-btn { flex: 1; padding: 14px; border-radius: 16px; font-family: inherit; font-weight: 800; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 48px; transition: all 0.25s ease; }
+.certificate-footer { display: flex; gap: 14px; flex-wrap: wrap; }
+.cert-btn { flex: 1; padding: 14px; border-radius: 16px; font-family: inherit; font-weight: 800; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 48px; transition: all 0.25s ease; white-space: nowrap; }
 .cert-btn.primary { background: var(--accent-gradient); color: #ffffff; border: none; box-shadow: 0 8px 20px var(--accent-glow); }
 .cert-btn.secondary { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); }
 
@@ -728,5 +758,6 @@ body {
     .controls-toolbar { flex-direction: column; align-items: stretch; }
     .view-and-actions { justify-content: space-between; }
     .cert-row { grid-template-columns: 1fr; }
+    .certificate-footer { flex-direction: column; }
 }
 /* Copyright (c) 2026 MeDoAnDrOiD. All Rights Reserved. */
