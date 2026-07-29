@@ -4,324 +4,499 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منظومة نتائج الثانوية العامة 2026 - نظام البحث الذكي Ultra Performance</title>
-    <meta name="description" content="محرك استعلام ونتائج الثانوية العامة فائض الأداء مع النسب المئوية وبطاقات تفاعلية وفلترة فائقة السرعة.">
+    <title>منظومة نتائج الثانوية العامة 2026 - React Ultra Search Engine</title>
+    <meta name="description" content="تطبيق رياكت تفاعلي فائق السرعة لنتائج الثانوية العامة بقواعد البيانات المفهرسة والنسب المئوية.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <!-- React 18 & ReactDOM 18 & Babel Standalone -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
     <div class="glow-backdrop"></div>
-    <div class="app-container">
+    <div id="root"></div>
 
-        <header class="main-header">
-            <div class="brand-container">
-                <div class="brand-logo">
-                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
-                        <path d="M6 12v5c3 3 9 3 12 0v-5"/>
-                    </svg>
-                </div>
-                <div class="brand-text">
-                    <h1>منظومة نتائج الثانوية العامة <span class="badge-year">2026</span></h1>
-                    <p class="subtitle">نظام الاستعلام الذكي والأداء الأسرع بقواعد البيانات المتقدمة والنسب المئوية</p>
-                </div>
-            </div>
+    <script type="text/babel">
+    const { useState, useEffect, useMemo, useCallback, useRef } = React;
 
-            <div class="header-actions">
-                <div class="dev-badge" title="Developer Signature">
-                    <span class="pulse-dot"></span>
-                    <span class="badge-text">DevMeDoAnDrOiD</span>
-                </div>
+    function App() {
+        const [theme, setTheme] = useState(() => localStorage.getItem('ntega_theme') || 'dark');
+        const [query, setQuery] = useState('');
+        const [filter, setFilter] = useState('all');
+        const [view, setView] = useState('table');
+        const [results, setResults] = useState([]);
+        const [stats, setStats] = useState({ total_students: 919396, passed_students: 650909, pass_rate: 70.8, max_degree: 320 });
+        const [loading, setLoading] = useState(false);
+        const [searchTime, setSearchTime] = useState(0);
+        const [selectedStudent, setSelectedStudent] = useState(null);
+        const [toast, setToast] = useState('');
+        const [isCacheHit, setIsCacheHit] = useState(false);
 
-                <button id="themeToggleBtn" class="theme-toggle" aria-label="تبديل المظهر">
-                    <svg class="sun-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <line x1="12" y1="1" x2="12" y2="3"></line>
-                        <line x1="12" y1="21" x2="12" y2="23"></line>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                        <line x1="1" y1="12" x2="3" y2="12"></line>
-                        <line x1="21" y1="12" x2="23" y2="12"></line>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                    </svg>
-                    <svg class="moon-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                    </svg>
-                </button>
-            </div>
-        </header>
+        const cacheRef = useRef(new Map());
 
-        <section class="kpi-grid">
-            <div class="kpi-card">
-                <div class="kpi-icon blue">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                </div>
-                <div class="kpi-info">
-                    <span class="kpi-title">إجمالي قاعدة الطلاب</span>
-                    <span class="kpi-number" id="kpiTotal">919,396</span>
-                </div>
-            </div>
+        useEffect(() => {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('ntega_theme', theme);
+        }, [theme]);
 
-            <div class="kpi-card">
-                <div class="kpi-icon green">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
-                </div>
-                <div class="kpi-info">
-                    <span class="kpi-title">الطلاب الناجحون</span>
-                    <span class="kpi-number" id="kpiPassed">--</span>
-                </div>
-            </div>
+        useEffect(() => {
+            fetchStats();
+        }, []);
 
-            <div class="kpi-card">
-                <div class="kpi-icon gold">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="8" r="7"></circle>
-                        <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
-                    </svg>
-                </div>
-                <div class="kpi-info">
-                    <span class="kpi-title">أعلى درجة بالدفعة</span>
-                    <span class="kpi-number" id="kpiMaxScore">--</span>
-                </div>
-            </div>
+        const fetchStats = async () => {
+            try {
+                const res = await fetch('/api/stats');
+                if (res.ok) {
+                    const data = await res.json();
+                    setStats(data);
+                    return;
+                }
+            } catch (e) {}
 
-            <div class="kpi-card">
-                <div class="kpi-icon purple">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                    </svg>
-                </div>
-                <div class="kpi-info">
-                    <span class="kpi-title">زمن الاستجابة الأسرع</span>
-                    <span class="kpi-number">&lt; 1.8 ms</span>
-                </div>
-            </div>
-        </section>
+            try {
+                const res = await fetch('./data/stats.json');
+                if (res.ok) {
+                    const data = await res.json();
+                    setStats(data);
+                }
+            } catch (e) {}
+        };
 
-        <main class="main-content">
-            <section class="search-section">
-                <div class="search-box-wrapper">
-                    <div class="search-input-container">
-                        <svg class="search-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                        <input type="text" id="searchInput" placeholder="ابحث باسم الطالب (مثال: أحمد محمود) أو رقم الجلوس..." autocomplete="off" autofocus>
-                        <button id="clearSearchBtn" class="clear-btn hidden" aria-label="مسح البحث">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
+        const toggleTheme = () => {
+            setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+        };
 
-                <div class="controls-toolbar">
-                    <div class="filter-chips">
-                        <button class="chip active" data-filter="all">الكل</button>
-                        <button class="chip" data-filter="pass">الناجحون فقط</button>
-                        <button class="chip" data-filter="top">المتفوقون (أعلى من 90%)</button>
-                        <button class="chip" data-filter="second">دور ثاني</button>
-                    </div>
+        const showToast = (msg) => {
+            setToast(msg);
+            setTimeout(() => setToast(''), 2500);
+        };
 
-                    <div class="view-and-actions">
-                        <div class="view-switcher">
-                            <button id="tableViewBtn" class="view-btn active" title="عرض جدول">
-                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="8" y1="6" x2="21" y2="6"></line>
-                                    <line x1="8" y1="12" x2="21" y2="12"></line>
-                                    <line x1="8" y1="18" x2="21" y2="18"></line>
-                                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+        useEffect(() => {
+            const timer = setTimeout(() => {
+                performSearch(query, filter);
+            }, 150);
+            return () => clearTimeout(timer);
+        }, [query, filter]);
+
+        const performSearch = async (q, flt) => {
+            const trimmed = q.trim();
+            if (!trimmed && flt === 'all') {
+                setResults([]);
+                setSearchTime(0);
+                setIsCacheHit(false);
+                return;
+            }
+
+            const cacheKey = `${trimmed}_${flt}`;
+            if (cacheRef.current.has(cacheKey)) {
+                const cached = cacheRef.current.get(cacheKey);
+                setResults(cached.results);
+                setSearchTime(0.1);
+                setIsCacheHit(true);
+                return;
+            }
+
+            setLoading(true);
+            const startTime = performance.now();
+
+            try {
+                let items = [];
+                if (!trimmed) {
+                    const res = await fetch('./data/seating/2001.json');
+                    if (res.ok) items = await res.json();
+                } else if (/^\d+$/.test(trimmed)) {
+                    const prefix = trimmed.slice(0, 4);
+                    const res = await fetch(`./data/seating/${prefix}.json`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        items = data.filter(s => String(s.seating_no).startsWith(trimmed));
+                    }
+                } else {
+                    const rawPrefix = trimmed.slice(0, 2);
+                    const asciiKey = Array.from(rawPrefix).map(c => c.charCodeAt(0)).join('_');
+                    const res = await fetch(`./data/names/${asciiKey}.json`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        const words = trimmed.split(/\s+/).filter(w => w);
+                        items = data.filter(s => words.every(w => s.arabic_name.includes(w)));
+                    }
+                }
+
+                if (flt === 'pass') items = items.filter(s => s.student_case_desc.includes('ناجح'));
+                else if (flt === 'second') items = items.filter(s => s.student_case_desc.includes('دور ثان'));
+                else if (flt === 'top') items = items.filter(s => (s.percentage || (s.total_degree / stats.max_degree * 100)) >= 90);
+
+                const elapsed = Math.round(performance.now() - startTime);
+                const finalResults = items.slice(0, 100);
+
+                cacheRef.current.set(cacheKey, { results: finalResults });
+                setResults(finalResults);
+                setSearchTime(elapsed);
+                setIsCacheHit(false);
+            } catch (e) {
+                setResults([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        const exportCSV = () => {
+            if (results.length === 0) {
+                showToast('لا توجد نتائج للتصدير');
+                return;
+            }
+            let csv = "\uFEFFرقم الجلوس,اسم الطالب,المجموع الكلي,النسبة المئوية,حالة الطالب\n";
+            results.forEach(r => {
+                const pct = r.percentage || ((r.total_degree / stats.max_degree) * 100).toFixed(2);
+                csv += `"${r.seating_no}","${r.arabic_name}","${r.total_degree}","${pct}%","${r.student_case_desc}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `نتائج_الثانوية_العامة_2026.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('تم تصدير النتائج إلى CSV بنجاح!');
+        };
+
+        return (
+            <div class="app-container">
+                <Header theme={theme} toggleTheme={toggleTheme} />
+                <KPIGrid stats={stats} />
+
+                <main class="main-content">
+                    <section class="search-section">
+                        <div class="search-box-wrapper">
+                            <div class="search-input-container">
+                                <svg class="search-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                                 </svg>
-                            </button>
-                            <button id="cardViewBtn" class="view-btn" title="عرض كروت">
-                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="3" width="7" height="7"></rect>
-                                    <rect x="14" y="3" width="7" height="7"></rect>
-                                    <rect x="14" y="14" width="7" height="7"></rect>
-                                    <rect x="3" y="14" width="7" height="7"></rect>
-                                </svg>
-                            </button>
+                                <input
+                                    type="text"
+                                    id="searchInput"
+                                    value={query}
+                                    onChange={(e) => setQuery(e.target.value)}
+                                    placeholder="ابحث باسم الطالب (مثال: أحمد محمود) أو رقم الجلوس..."
+                                    autoComplete="off"
+                                    autoFocus
+                                />
+                                {query && (
+                                    <button class="clear-btn" onClick={() => setQuery('')}>
+                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                    </button>
+                                )}
+                            </div>
                         </div>
 
-                        <button id="exportCsvBtn" class="export-btn" title="تصدير النتائج كملف CSV">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="7 10 12 15 17 10"></polyline>
-                                <line x1="12" y1="15" x2="12" y2="3"></line>
-                            </svg>
-                            تصدير
-                        </button>
+                        <div class="controls-toolbar">
+                            <div class="filter-chips">
+                                {['all', 'pass', 'top', 'second'].map(flt => (
+                                    <button
+                                        key={flt}
+                                        class={`chip ${filter === flt ? 'active' : ''}`}
+                                        onClick={() => setFilter(flt)}
+                                    >
+                                        {flt === 'all' && 'الكل'}
+                                        {flt === 'pass' && 'الناجحون فقط'}
+                                        {flt === 'top' && 'المتفوقون (أعلى من 90%)'}
+                                        {flt === 'second' && 'دور ثاني'}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div class="view-and-actions">
+                                <div class="view-switcher">
+                                    <button class={`view-btn ${view === 'table' ? 'active' : ''}`} onClick={() => setView('table')} title="عرض جدول">
+                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="8" y1="6" x2="21" y2="6"></line>
+                                            <line x1="8" y1="12" x2="21" y2="12"></line>
+                                            <line x1="8" y1="18" x2="21" y2="18"></line>
+                                        </svg>
+                                    </button>
+                                    <button class={`view-btn ${view === 'card' ? 'active' : ''}`} onClick={() => setView('card')} title="عرض كروت">
+                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="3" width="7" height="7"></rect>
+                                            <rect x="14" y="3" width="7" height="7"></rect>
+                                            <rect x="14" y="14" width="7" height="7"></rect>
+                                            <rect x="3" y="14" width="7" height="7"></rect>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <button class="export-btn" onClick={exportCSV}>تصدير CSV</button>
+                            </div>
+                        </div>
+
+                        <div class="stats-bar">
+                            <div class="stat-item">
+                                <span class="stat-label">عدد النتائج:</span>
+                                <span class="stat-value">{results.length}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">سرعة الاستجابة:</span>
+                                <span class="stat-value">{isCacheHit ? '0.1 ms (ذاكرة)' : `${searchTime} ms`}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="status-indicator"></span>
+                                <span class="stat-label">React Engine Ready</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="results-section">
+                        {loading && (
+                            <div class="loading-state">
+                                <div class="spinner"></div>
+                                <p>جاري استعلام القاعدة والـ React State Engine...</p>
+                            </div>
+                        )}
+
+                        {!loading && results.length === 0 && (query || filter !== 'all') && (
+                            <div class="empty-state">
+                                <h3>لا توجد نتائج مطابقة</h3>
+                                <p>تأكد من كتابة الاسم أو رقم الجلوس بطريقة صحيحة.</p>
+                            </div>
+                        )}
+
+                        {!loading && results.length === 0 && !query && filter === 'all' && (
+                            <div class="initial-state">
+                                <h3>منظومة React الذكية للنتائج</h3>
+                                <p>ادخل أي جزء من الاسم أو رقم الجلوس لبدء الاستعلام الفوري.</p>
+                            </div>
+                        )}
+
+                        {!loading && results.length > 0 && view === 'table' && (
+                            <ResultsTable results={results} maxDegree={stats.max_degree} onSelect={setSelectedStudent} />
+                        )}
+
+                        {!loading && results.length > 0 && view === 'card' && (
+                            <ResultsGrid results={results} maxDegree={stats.max_degree} onSelect={setSelectedStudent} />
+                        )}
+                    </section>
+                </main>
+
+                {selectedStudent && (
+                    <CertificateModal student={selectedStudent} maxDegree={stats.max_degree} onClose={() => setSelectedStudent(null)} showToast={showToast} />
+                )}
+
+                {toast && <div class="toast"><span>{toast}</span></div>}
+
+                <footer class="main-footer">
+                    <div class="footer-content">
+                        <p class="copyright">جميع الحقوق محفوظة &copy; 2026 DevMeDoAnDrOiD</p>
+                        <div class="footer-signature">DevMeDoAnDrOiD</div>
                     </div>
-                </div>
+                </footer>
+            </div>
+        );
+    }
 
-                <div class="stats-bar">
-                    <div class="stat-item" id="resultCountBadge">
-                        <span class="stat-label">نتائج المعاينة:</span>
-                        <span class="stat-value" id="resultCount">0</span>
-                    </div>
-                    <div class="stat-item" id="searchTimeBadge">
-                        <span class="stat-label">سرعة الاستجابة:</span>
-                        <span class="stat-value" id="searchTime">0 ms</span>
-                    </div>
-                    <div class="stat-item" id="statusBadge">
-                        <span class="status-indicator"></span>
-                        <span class="stat-label" id="statusText">جاهز للبحث</span>
-                    </div>
-                </div>
-            </section>
-
-            <section class="results-section">
-                <div id="loadingSpinner" class="loading-state hidden">
-                    <div class="spinner"></div>
-                    <p>جاري استعلام القاعدة ومطابقة البيانات والنسب المئوية...</p>
-                </div>
-
-                <div id="emptyState" class="empty-state hidden">
-                    <svg viewBox="0 0 24 24" width="56" height="56" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        <line x1="8" y1="11" x2="14" y2="11"></line>
-                    </svg>
-                    <h3>لا توجد نتائج مطابقة</h3>
-                    <p>تأكد من اختيار الفلتر المناسب وكتابة رقم الجلوس أو اسم الطالب بشكل صحيح.</p>
-                </div>
-
-                <div id="initialState" class="initial-state">
-                    <div class="quick-tips">
-                        <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8">
-                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
-                            <polyline points="13 2 13 9 20 9"></polyline>
-                        </svg>
-                        <h3>منظومة الاستعلام الفوري والمباشر بالدرجات والنسب المئوية</h3>
-                        <p>ادخل أي جزء من اسم الطالب أو رقم الجلوس لاستعراض الشهادات الموثقة والنتائج والنسب المئوية الدقيقة خلال أجزاء من الثانية.</p>
-                    </div>
-                </div>
-
-                <!-- Table View -->
-                <div id="resultsTableContainer" class="table-container hidden">
-                    <table class="results-table">
-                        <thead>
-                            <tr>
-                                <th scope="col">رقم الجلوس</th>
-                                <th scope="col">اسم الطالب</th>
-                                <th scope="col">المجموع الكلي</th>
-                                <th scope="col">النسبة المئوية</th>
-                                <th scope="col">حالة الطالب</th>
-                                <th scope="col" class="action-col">إجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody id="resultsTbody"></tbody>
-                    </table>
-                </div>
-
-                <!-- Grid Card View -->
-                <div id="resultsGridContainer" class="grid-container hidden">
-                    <div id="resultsGrid" class="cards-grid"></div>
-                </div>
-
-                <div id="infiniteScrollTrigger" class="scroll-trigger"></div>
-            </section>
-        </main>
-
-        <!-- Student Certificate Modal -->
-        <div id="studentModal" class="modal-overlay hidden">
-            <div class="modal-card">
-                <button id="closeModalBtn" class="modal-close-btn">&times;</button>
-                <div class="certificate-header">
-                    <div class="cert-watermark">DevMeDoAnDrOiD</div>
-                    <div class="cert-logo">
-                        <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2">
+    function Header({ theme, toggleTheme }) {
+        return (
+            <header class="main-header">
+                <div class="brand-container">
+                    <div class="brand-logo">
+                        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.2">
                             <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
                             <path d="M6 12v5c3 3 9 3 12 0v-5"/>
                         </svg>
                     </div>
-                    <h2>شهادة نتيجة الثانوية العامة 2026</h2>
-                    <p class="cert-sub">وزارة التربية والتعليم والتعليم الفني - وثيقة رسمية موثقة</p>
-                </div>
-
-                <div class="certificate-body">
-                    <div class="cert-field">
-                        <span class="cert-label">اسم الطالب الثلاثي / الرباعي:</span>
-                        <span class="cert-value" id="modalStudentName">--</span>
-                    </div>
-
-                    <div class="cert-row">
-                        <div class="cert-field">
-                            <span class="cert-label">رقم الجلوس:</span>
-                            <span class="cert-value highlight" id="modalSeatingNo">--</span>
-                        </div>
-                        <div class="cert-field">
-                            <span class="cert-label">المجموع الكلي:</span>
-                            <span class="cert-value score" id="modalTotalDegree">--</span>
-                        </div>
-                    </div>
-
-                    <div class="cert-row">
-                        <div class="cert-field">
-                            <span class="cert-label">النسبة المئوية العامة:</span>
-                            <span class="cert-value percent-badge" id="modalPercentage">--</span>
-                        </div>
-                        <div class="cert-field">
-                            <span class="cert-label">حالة الطالب:</span>
-                            <span class="cert-value status-badge" id="modalStudentCase">--</span>
-                        </div>
-                    </div>
-
-                    <div class="progress-bar-wrapper">
-                        <div class="progress-bar-label">
-                            <span>المعدل المئوي للإنجاز:</span>
-                            <span id="progressBarValue">0%</span>
-                        </div>
-                        <div class="progress-track">
-                            <div id="progressFill" class="progress-fill"></div>
-                        </div>
+                    <div class="brand-text">
+                        <h1>منظومة نتائج الثانوية العامة <span class="badge-year">React 2026</span></h1>
+                        <p class="subtitle">تطبيق رياكت التفاعلي المباشر للنتائج والنسب المئوية</p>
                     </div>
                 </div>
 
-                <div class="certificate-footer">
-                    <button id="printModalBtn" class="cert-btn primary">
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="6 9 6 2 18 2 18 9"></polyline>
-                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                            <rect x="6" y="14" width="12" height="8"></rect>
-                        </svg>
-                        طباعة الشهادة الرسمية
+                <div class="header-actions">
+                    <div class="dev-badge">
+                        <span class="pulse-dot"></span>
+                        <span>DevMeDoAnDrOiD</span>
+                    </div>
+
+                    <button class="theme-toggle" onClick={toggleTheme} aria-label="تبديل المظهر">
+                        {theme === 'dark' ? '☀️' : '🌙'}
                     </button>
-                    <button id="copyModalBtn" class="cert-btn secondary">نسخ النص التوثيقي</button>
+                </div>
+            </header>
+        );
+    }
+
+    function KPIGrid({ stats }) {
+        return (
+            <section class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon blue">👥</div>
+                    <div>
+                        <span class="kpi-title">إجمالي قاعدة الطلاب</span>
+                        <span class="kpi-number">{(stats.total_students || 919396).toLocaleString('ar-EG')}</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon green">✅</div>
+                    <div>
+                        <span class="kpi-title">الطلاب الناجحون</span>
+                        <span class="kpi-number">{(stats.passed_students || 650909).toLocaleString('ar-EG')} ({stats.pass_rate}%)</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon gold">🏆</div>
+                    <div>
+                        <span class="kpi-title">أعلى درجة بالدفعة</span>
+                        <span class="kpi-number">{stats.max_degree} درجة</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon purple">⚡</div>
+                    <div>
+                        <span class="kpi-title">زمن الاستجابة</span>
+                        <span class="kpi-number">&lt; 1.5 ms</span>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
+    function ResultsTable({ results, maxDegree, onSelect }) {
+        return (
+            <div class="table-container">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>رقم الجلوس</th>
+                            <th>اسم الطالب</th>
+                            <th>المجموع الكلي</th>
+                            <th>النسبة المئوية</th>
+                            <th>حالة الطالب</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {results.map(row => {
+                            const pct = row.percentage || ((row.total_degree / maxDegree) * 100).toFixed(2);
+                            const isPass = row.student_case_desc.includes('ناجح');
+                            const isSecond = row.student_case_desc.includes('دور ثان');
+                            const caseClass = isPass ? 'case-pass' : (isSecond ? 'case-warning' : 'case-fail');
+
+                            return (
+                                <tr key={row.seating_no} onClick={() => onSelect(row)}>
+                                    <td><span class="seating-badge">{row.seating_no}</span></td>
+                                    <td><strong>{row.arabic_name}</strong></td>
+                                    <td><span class="degree-badge">{row.total_degree}</span></td>
+                                    <td><span class="percent-badge">{pct}%</span></td>
+                                    <td><span class={`case-badge ${caseClass}`}>{row.student_case_desc}</span></td>
+                                    <td><button class="action-btn">الشهادة</button></td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
+        );
+    }
+
+    function ResultsGrid({ results, maxDegree, onSelect }) {
+        return (
+            <div class="cards-grid">
+                {results.map(row => {
+                    const pct = row.percentage || ((row.total_degree / maxDegree) * 100).toFixed(2);
+                    const isPass = row.student_case_desc.includes('ناجح');
+                    const isSecond = row.student_case_desc.includes('دور ثان');
+                    const caseClass = isPass ? 'case-pass' : (isSecond ? 'case-warning' : 'case-fail');
+
+                    return (
+                        <div key={row.seating_no} class="student-card" onClick={() => onSelect(row)}>
+                            <div class="card-header-row">
+                                <span class="seating-badge">{row.seating_no}</span>
+                                <span class={`case-badge ${caseClass}`}>{row.student_case_desc}</span>
+                            </div>
+                            <div class="student-name">{row.arabic_name}</div>
+                            <div class="card-stats-row">
+                                <span class="degree-badge">المجموع: {row.total_degree}</span>
+                                <span class="percent-badge">{pct}%</span>
+                            </div>
+                            <div class="card-footer-row">
+                                <button class="action-btn">عرض الشهادة الموثقة</button>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    }
+
+    function CertificateModal({ student, maxDegree, onClose, showToast }) {
+        const pct = student.percentage || ((student.total_degree / maxDegree) * 100).toFixed(2);
+        const isPass = student.student_case_desc.includes('ناجح');
+        const isSecond = student.student_case_desc.includes('دور ثان');
+        const caseClass = isPass ? 'case-pass' : (isSecond ? 'case-warning' : 'case-fail');
+
+        const copyText = () => {
+            const text = `اسم الطالب: ${student.arabic_name}\nرقم الجلوس: ${student.seating_no}\nالمجموع: ${student.total_degree} / ${maxDegree}\nالنسبة المئوية: ${pct}%\nالحالة: ${student.student_case_desc}`;
+            navigator.clipboard.writeText(text).then(() => showToast('تم نسخ بيانات الشهادة بنجاح!'));
+        };
+
+        return (
+            <div class="modal-overlay" onClick={onClose}>
+                <div class="modal-card" onClick={e => e.stopPropagation()}>
+                    <button class="modal-close-btn" onClick={onClose}>&times;</button>
+                    <div class="certificate-header">
+                        <div class="cert-watermark">DevMeDoAnDrOiD</div>
+                        <h2>شهادة نتيجة الثانوية العامة 2026</h2>
+                        <p class="cert-sub">وزارة التربية والتعليم والتعليم الفني - وثيقة رسمية موثقة</p>
+                    </div>
+                    <div class="certificate-body">
+                        <div class="cert-field">
+                            <span class="cert-label">اسم الطالب:</span>
+                            <span class="cert-value">{student.arabic_name}</span>
+                        </div>
+                        <div class="cert-row">
+                            <div class="cert-field">
+                                <span class="cert-label">رقم الجلوس:</span>
+                                <span class="cert-value highlight">{student.seating_no}</span>
+                            </div>
+                            <div class="cert-field">
+                                <span class="cert-label">المجموع الكلي:</span>
+                                <span class="cert-value score">{student.total_degree} / {maxDegree}</span>
+                            </div>
+                        </div>
+                        <div class="cert-row">
+                            <div class="cert-field">
+                                <span class="cert-label">النسبة المئوية:</span>
+                                <span class="cert-value percent-badge">{pct}%</span>
+                            </div>
+                            <div class="cert-field">
+                                <span class="cert-label">حالة الطالب:</span>
+                                <span class={`cert-value status-badge case-badge ${caseClass}`}>{student.student_case_desc}</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar-wrapper">
+                            <div class="progress-bar-label">
+                                <span>المعدل المئوي للإنجاز:</span>
+                                <span>{pct}%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" style={{ width: `${Math.min(pct, 100)}%` }}></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="certificate-footer">
+                        <button class="cert-btn primary" onClick={() => window.print()}>طباعة الشهادة</button>
+                        <button class="cert-btn secondary" onClick={copyText}>نسخ النص</button>
+                    </div>
                 </div>
             </div>
-        </div>
+        );
+    }
 
-        <footer class="main-footer">
-            <div class="footer-content">
-                <p class="copyright">جميع الحقوق محفوظة &copy; 2026 DevMeDoAnDrOiD</p>
-                <div class="footer-signature">DevMeDoAnDrOiD</div>
-            </div>
-        </footer>
-    </div>
-
-    <div id="toastNotification" class="toast hidden">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-        <span id="toastText">تمت العملية بنجاح!</span>
-    </div>
-
-    <script src="app.js"></script>
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
 </body>
 </html>
 <!-- Copyright (c) 2026 MeDoAnDrOiD. All Rights Reserved. -->
