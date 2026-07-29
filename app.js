@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             isGitHubPagesMode = true;
-            const res = await fetch('data/stats.json');
+            const res = await fetch('./data/stats.json');
             if (res.ok) {
                 const data = await res.json();
                 applyStats(data);
@@ -222,15 +222,15 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             if (/^\d+$/.test(currentQuery)) {
                 const prefix = currentQuery.slice(0, 4);
-                const res = await fetch(`data/seating/${prefix}.json`);
+                const res = await fetch(`./data/seating/${prefix}.json`);
                 if (res.ok) {
                     const data = await res.json();
                     items = data.filter(s => String(s.seating_no).startsWith(currentQuery));
                 }
             } else {
-                const prefix = currentQuery.slice(0, 2);
-                const safePrefix = prefix.replace(/[^\w\u0600-\u06FF]/g, '').trim();
-                const res = await fetch(`data/names/${safePrefix}.json`);
+                const rawPrefix = currentQuery.slice(0, 2);
+                const asciiKey = Array.from(rawPrefix).map(c => c.charCodeAt(0)).join('_');
+                const res = await fetch(`./data/names/${asciiKey}.json`);
                 if (res.ok) {
                     const data = await res.json();
                     const words = currentQuery.split(/\s+/).filter(w => w);
