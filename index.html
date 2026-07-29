@@ -4,8 +4,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منظومة نتائج الثانوية العامة 2026 - React Ultra Vector System</title>
-    <meta name="description" content="تطبيق رياكت تفاعلي فائق السرعة مع أيقونات فيكتور احترافية ومحرك معالجة الهمزات الذكي.">
+    <title>نتيجة الثانوية العامة 2026 بالاسم ورقم الجلوس - البوابة الرسمية المعتمدة</title>
+    
+    <!-- Professional SEO Meta Tags -->
+    <meta name="description" content="موقع نتيجة الثانوية العامة 2026 الرسمي المعتمد. استعلم عن نتيجتك فوراً بالاسم أو رقم الجلوس لمعرفة المجموع الكلي، النسبة المئوية، وحالة الطالب مع طباعة الشهادة الرسمية.">
+    <meta name="keywords" content="نتيجة الثانوية العامة 2026, نتائج الثانوية العامة, استعلام نتيجة الثانوية العامة برقم الجلوس, نتيجة الثانوية العامة بالاسم, نسبة الثانوية العامة 2026, موقع نتائج الثانوية العامة, اوائل الثانوية العامة 2026, وزارة التربية والتعليم, ثانوية عامة 2026">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <link rel="canonical" href="https://medoandroid.github.io/natayeg-2026/">
+
+    <!-- Open Graph Meta Tags (Facebook / WhatsApp / Telegram) -->
+    <meta property="og:locale" content="ar_EG">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="نتيجة الثانوية العامة 2026 بالاسم ورقم الجلوس - البوابة الرسمية المعتمدة">
+    <meta property="og:description" content="البوابة المعتمدة لاستعلام نتائج الطلاب بالثانوية العامة 2026. بحث سوري بالاسم أو رقم الجلوس وحساب النسب المئوية الدقيقة وطباعة الشهادات.">
+    <meta property="og:url" content="https://medoandroid.github.io/natayeg-2026/">
+    <meta property="og:site_name" content="منظومة نتائج الثانوية العامة 2026">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="نتيجة الثانوية العامة 2026 بالاسم ورقم الجلوس">
+    <meta name="twitter:description" content="استعلم عن نتيجة الثانوية العامة 2026 فوراً بالاسم ورقم الجلوس واحصل على النسبة المئوية الموثقة.">
+
+    <!-- Google Structured Data JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "منظومة نتائج الثانوية العامة 2026",
+      "alternateName": "نتيجة الثانوية العامة 2026",
+      "url": "https://medoandroid.github.io/natayeg-2026/",
+      "inLanguage": "ar-EG",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://medoandroid.github.io/natayeg-2026/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
@@ -201,7 +237,7 @@
                                     id="searchInput"
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
-                                    placeholder="ابحث باسم الطالب (تجاهل الهمزات) أو رقم الجلوس..."
+                                    placeholder="ابحث باسم الطالب أو رقم الجلوس..."
                                     autoComplete="off"
                                     autoFocus
                                 />
@@ -268,11 +304,11 @@
                             </div>
                             <div class="stat-item">
                                 <span class="stat-label">سرعة الاستجابة:</span>
-                                <span class="stat-value">{isCacheHit ? '0.1 ms (ذاكرة)' : `${searchTime} ms`}</span>
+                                <span class="stat-value">{isCacheHit ? '0.1 ms' : `${searchTime} ms`}</span>
                             </div>
                             <div class="stat-item">
                                 <span class="status-indicator"></span>
-                                <span class="stat-label">Vector Turbo Ready</span>
+                                <span class="stat-label">المحرك يعمل بكفاءة عالية</span>
                             </div>
                         </div>
                     </section>
@@ -294,8 +330,8 @@
 
                         {!loading && results.length === 0 && !query && filter === 'all' && (
                             <div class="initial-state">
-                                <h3>منظومة React Vector الذكية للنتائج</h3>
-                                <p>ادخل أي جزء من الاسم (مثل: احمد، أحمد) أو رقم الجلوس لبدء الاستعلام الفوري.</p>
+                                <h3>منظومة استعلام نتائج الثانوية العامة الرسمية</h3>
+                                <p>ادخل أي جزء من الاسم أو رقم الجلوس لبدء الاستعلام الفوري.</p>
                             </div>
                         )}
 
@@ -336,8 +372,8 @@
                         </svg>
                     </div>
                     <div class="brand-text">
-                        <h1>منظومة نتائج الثانوية العامة <span class="badge-year">React Vector</span></h1>
-                        <p class="subtitle">تطبيق رياكت التفاعلي المباشر مع واجهة فيكتور الفاخرة</p>
+                        <h1>منظومة نتائج الثانوية العامة <span class="badge-year">2026</span></h1>
+                        <p class="subtitle">البوابة الرسمية لاستعلام النتائج والنسب المئوية الموثقة</p>
                     </div>
                 </div>
 
@@ -567,7 +603,6 @@
                             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style={{ marginLeft: '8px' }}>
                                 <polyline points="6 9 6 2 18 2 18 9"></polyline>
                                 <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-
                                 <rect x="6" y="14" width="12" height="8"></rect>
                             </svg>
                             طباعة الشهادة

@@ -1,0 +1,6 @@
+# DevMeDoAnDrOiD
+User-agent: *
+Allow: /
+
+Sitemap: https://medoandroid.github.io/natayeg-2026/sitemap.xml
+# Copyright (c) 2026 MeDoAnDrOiD. All Rights Reserved.
