@@ -50,7 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeStudent = null;
     let toastTimeout = null;
     let systemMaxScore = 320;
-    let isGitHubPagesMode = false;
+
+    let isGitHubPagesMode = (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1');
 
     const searchCache = new Map();
 
@@ -67,17 +68,19 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchStats();
 
     async function fetchStats() {
-        try {
-            const res = await fetch('/api/stats');
-            if (res.ok) {
-                const data = await res.json();
-                applyStats(data);
-                return;
-            }
-        } catch (e) {}
+        if (!isGitHubPagesMode) {
+            try {
+                const res = await fetch('/api/stats');
+                if (res.ok) {
+                    const data = await res.json();
+                    applyStats(data);
+                    return;
+                }
+            } catch (e) {}
+            isGitHubPagesMode = true;
+        }
 
         try {
-            isGitHubPagesMode = true;
             const res = await fetch('./data/stats.json');
             if (res.ok) {
                 const data = await res.json();
@@ -220,7 +223,12 @@ document.addEventListener('DOMContentLoaded', () => {
         let items = [];
 
         try {
-            if (/^\d+$/.test(currentQuery)) {
+            if (!currentQuery) {
+                const res = await fetch('./data/seating/2001.json');
+                if (res.ok) {
+                    items = await res.json();
+                }
+            } else if (/^\d+$/.test(currentQuery)) {
                 const prefix = currentQuery.slice(0, 4);
                 const res = await fetch(`./data/seating/${prefix}.json`);
                 if (res.ok) {
@@ -261,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
             handleDataResponse(resultData, false);
 
         } catch (e) {
-            statusTextEl.textContent = 'حدث خطأ في الاتصال';
+            statusTextEl.textContent = 'حدث خطأ في الاستعلام';
             if (currentOffset === 0) {
                 showState('empty');
             }
