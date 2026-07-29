@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeStudent = null;
     let toastTimeout = null;
     let systemMaxScore = 320;
+    let isGitHubPagesMode = false;
 
     const searchCache = new Map();
 
@@ -70,12 +71,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch('/api/stats');
             if (res.ok) {
                 const data = await res.json();
-                systemMaxScore = data.max_degree || 320;
-                kpiTotal.textContent = Number(data.total_students).toLocaleString('ar-EG');
-                kpiPassed.textContent = `${Number(data.passed_students).toLocaleString('ar-EG')} (${data.pass_rate}%)`;
-                kpiMaxScore.textContent = `${data.max_degree} درجة`;
+                applyStats(data);
+                return;
             }
         } catch (e) {}
+
+        try {
+            isGitHubPagesMode = true;
+            const res = await fetch('data/stats.json');
+            if (res.ok) {
+                const data = await res.json();
+                applyStats(data);
+            }
+        } catch (e) {}
+    }
+
+    function applyStats(data) {
+        systemMaxScore = data.max_degree || 320;
+        kpiTotal.textContent = Number(data.total_students).toLocaleString('ar-EG');
+        kpiPassed.textContent = `${Number(data.passed_students).toLocaleString('ar-EG')} (${data.pass_rate}%)`;
+        kpiMaxScore.textContent = `${data.max_degree} درجة`;
     }
 
     document.querySelectorAll('.chip').forEach(chip => {
@@ -180,21 +195,76 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        if (!isGitHubPagesMode) {
+            try {
+                const url = `/api/search?q=${encodeURIComponent(currentQuery)}&filter=${currentFilter}&limit=${limit}&offset=${currentOffset}`;
+                const response = await fetch(url);
+                if (response.ok) {
+                    const data = await response.json();
+                    searchCache.set(cacheKey, data);
+                    handleDataResponse(data, false);
+                    isLoading = false;
+                    return;
+                }
+            } catch (error) {
+                isGitHubPagesMode = true;
+            }
+        }
+
+        await fetchFromGitHubPagesPartition(cacheKey);
+        isLoading = false;
+    }
+
+    async function fetchFromGitHubPagesPartition(cacheKey) {
+        const startTime = performance.now();
+        let items = [];
+
         try {
-            const url = `/api/search?q=${encodeURIComponent(currentQuery)}&filter=${currentFilter}&limit=${limit}&offset=${currentOffset}`;
-            const response = await fetch(url);
-            const data = await response.json();
+            if (/^\d+$/.test(currentQuery)) {
+                const prefix = currentQuery.slice(0, 4);
+                const res = await fetch(`data/seating/${prefix}.json`);
+                if (res.ok) {
+                    const data = await res.json();
+                    items = data.filter(s => String(s.seating_no).startsWith(currentQuery));
+                }
+            } else {
+                const prefix = currentQuery.slice(0, 2);
+                const safePrefix = prefix.replace(/[^\w\u0600-\u06FF]/g, '').trim();
+                const res = await fetch(`data/names/${safePrefix}.json`);
+                if (res.ok) {
+                    const data = await res.json();
+                    const words = currentQuery.split(/\s+/).filter(w => w);
+                    items = data.filter(s => {
+                        return words.every(w => s.arabic_name.includes(w));
+                    });
+                }
+            }
 
-            searchCache.set(cacheKey, data);
-            handleDataResponse(data, false);
+            if (currentFilter === 'pass') {
+                items = items.filter(s => s.student_case_desc.includes('ناجح'));
+            } else if (currentFilter === 'second') {
+                items = items.filter(s => s.student_case_desc.includes('دور ثان'));
+            } else if (currentFilter === 'top') {
+                items = items.filter(s => s.percentage >= 90 || s.total_degree >= 288);
+            }
 
-        } catch (error) {
+            const pagedResults = items.slice(currentOffset, currentOffset + limit);
+            const elapsed = Math.round(performance.now() - startTime);
+
+            const resultData = {
+                results: pagedResults,
+                count: pagedResults.length,
+                time_ms: elapsed
+            };
+
+            searchCache.set(cacheKey, resultData);
+            handleDataResponse(resultData, false);
+
+        } catch (e) {
             statusTextEl.textContent = 'حدث خطأ في الاتصال';
             if (currentOffset === 0) {
                 showState('empty');
             }
-        } finally {
-            isLoading = false;
         }
     }
 
